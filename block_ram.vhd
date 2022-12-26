@@ -3,7 +3,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use work.convolution_pkg.all;
 
-entity block_ram is
+entity block_ram_0 is
   generic(
     DATA_WIDTH : integer := 8;
     RAM_DEPTH  : integer := 110
@@ -19,9 +19,9 @@ entity block_ram is
     o_data : out std_logic_vector(DATA_WIDTH - 1 downto 0);
     o_data_vld : out std_logic
   );
-end block_ram;
+end block_ram_0;
 	
-architecture Behavioral of block_ram is
+architecture Behavioral of block_ram_0 is
 	
   type BRAM_DATA_t is array (0 to RAM_DEPTH - 1) of std_logic_vector(DATA_WIDTH - 1 downto 0) ; 
   signal BRAM_DATA : BRAM_DATA_t := (others =>(others => '0'));
