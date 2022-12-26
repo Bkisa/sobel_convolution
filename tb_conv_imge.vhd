@@ -3,27 +3,27 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use std.textio.ALL;
-use work.konvolusyon_imge_paket.all;
+use work.convolution_pkg.all;
 
 entity tb_conv_imge is
 end tb_conv_imge;
 
 architecture Behavioral of tb_conv_imge is
 
-    component konvolusyon_imge
+    component conv_image
     port( 
         i_clk           : in std_logic;
         i_rst           : in std_logic;
         i_en            : in std_logic;
         i_start         : in std_logic;
-        i_data          : in std_logic_vector(VERI_UZUNLUGU - 1 downto 0);
+        i_data          : in std_logic_vector(DATA_WIDTH - 1 downto 0);
         i_data_valid    : in std_logic;
         i_kernel        : in std_logic_vector(2 downto 0);
-        o_addr          : out std_logic_vector(log2_int(IMGE_SATIR * IMGE_SUTUN) - 1 downto 0);
+        o_addr          : out std_logic_vector(log2_int(IMG_ROW * IMG_COLUNM) - 1 downto 0);
         o_addr_vld      : out std_logic;
         o_data          : out std_logic_vector(7 downto 0);
         o_data_vld      : out std_logic;
-        o_OK         : out std_logic                
+        o_OK            : out std_logic                
     );        
     end component;
         
@@ -59,10 +59,10 @@ architecture Behavioral of tb_conv_imge is
     signal i_ram_en : std_logic := '1';
     signal o_data_vld : std_logic := '0';
     signal o_data : std_logic_vector(7 downto 0) := (others => '0');
-    signal i_ram_data : std_logic_vector(VERI_UZUNLUGU - 1 downto 0) := (others => '0'); 
-    signal i_ram_data_addr : std_logic_vector(log2_int(IMGE_SATIR * IMGE_SUTUN) - 1 downto 0) := (others => '0');
-    signal o_ram_data : std_logic_vector(VERI_UZUNLUGU - 1 downto 0) := (others => '0'); 
-    signal o_data_addr : std_logic_vector(log2_int(IMGE_SATIR * IMGE_SUTUN) - 1 downto 0) := (others => '0');
+    signal i_ram_data : std_logic_vector(DATA_WIDTH - 1 downto 0) := (others => '0'); 
+    signal i_ram_data_addr : std_logic_vector(log2_int(IMG_ROW * IMG_COLUNM) - 1 downto 0) := (others => '0');
+    signal o_ram_data : std_logic_vector(DATA_WIDTH - 1 downto 0) := (others => '0'); 
+    signal o_data_addr : std_logic_vector(log2_int(IMG_ROW * IMG_COLUNM) - 1 downto 0) := (others => '0');
     signal o_ram_data_vld : std_logic := '0';        
     signal i_en : std_logic := '0';
     signal i_wr_en : std_logic := '0';
@@ -105,7 +105,7 @@ begin
                     if not endfile(dosya_okuma) then
                         readline(dosya_okuma, satir_okuma);
                         read(satir_okuma, data_okuma);
-                        i_ram_data <= conv_std_logic_vector(data_okuma, VERI_UZUNLUGU);
+                        i_ram_data <= conv_std_logic_vector(data_okuma, DATA_WIDTH);
                         i_ram_data_addr <= conv_std_logic_vector(data_counter, i_ram_data_addr'length);
                         i_en <= '0';
                         i_wr_en <= '1';
@@ -131,7 +131,7 @@ begin
         end if;
     end process;     
 
-    konvolusyon_imge_map : konvolusyon_imge
+    konvolusyon_imge_map : conv_image
     port map( 
         i_clk => i_clk,
         i_rst => i_rst,
@@ -149,8 +149,8 @@ begin
 
     block_ram_map : block_ram 
     generic map(
-        VERI_UZUNLUGU => VERI_UZUNLUGU,
-        RAM_DERINLIGI => IMGE_SATIR * IMGE_SUTUN
+        VERI_UZUNLUGU => DATA_WIDTH,
+        RAM_DERINLIGI => IMG_ROW * IMG_COLUNM
     )
     port map(
         i_clk => i_clk,
