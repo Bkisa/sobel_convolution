@@ -27,10 +27,10 @@ architecture Behavioral of tb_conv_imge is
     );        
     end component;
         
-    component block_ram 
+    component block_ram_0 
     generic(
-        VERI_UZUNLUGU : integer := 8;
-        RAM_DERINLIGI : integer := 110
+        DATA_WIDTH : integer;
+        RAM_DEPTH : integer
     );
     port(
         i_clk       : in std_logic;
@@ -38,16 +38,16 @@ architecture Behavioral of tb_conv_imge is
         i_ram_en    : in std_logic;
         i_wr_en     : in std_logic;
         i_read_en   : in std_logic;
-        i_data_addr : in std_logic_vector(log2_int(RAM_DERINLIGI) - 1 downto 0);
-        i_data      : in std_logic_vector(VERI_UZUNLUGU - 1 downto 0);
-        o_data      : out std_logic_vector(VERI_UZUNLUGU - 1 downto 0);
+        i_data_addr : in std_logic_vector(log2_int(RAM_DEPTH) - 1 downto 0);
+        i_data      : in std_logic_vector(DATA_WIDTH - 1 downto 0);
+        o_data      : out std_logic_vector(DATA_WIDTH - 1 downto 0);
         o_data_vld  : out std_logic
     );
     end component;
     
     constant CLK_PERIOD  : time := 20 ns;
-    constant IMG_PATH    : string := "C:\i_img.txt";
-    constant IMG_WR_PATH : string := "D:\o_img.txt";
+    constant IMG_PATH    : string := "C:\Users\bugra\Downloads\sobel_convolution\images\in.txt";
+    constant IMG_WR_PATH : string := "C:\Users\bugra\Downloads\sobel_convolution\images\out.txt";
   
    
     type t_Konvolusyon_Imge  is (RAM_READ, RAM_WRITE, OK);
@@ -139,7 +139,7 @@ begin
         i_start => i_start,
         i_data => o_ram_data, 
         i_data_valid => o_ram_data_vld,
-        i_kernel => GAUSS,
+        i_kernel => HORIZONTAL_SOBEL,
         o_addr => o_data_addr,
         o_addr_vld => o_data_addr_vld,  
         o_data => o_data,
@@ -147,10 +147,10 @@ begin
         o_OK => r_proc_ok                
     );   
 
-    block_ram_map : block_ram 
+    block_ram_map : block_ram_0 
     generic map(
-        VERI_UZUNLUGU => DATA_WIDTH,
-        RAM_DERINLIGI => IMG_ROW * IMG_COLUNM
+        DATA_WIDTH => DATA_WIDTH,
+        RAM_DEPTH => IMG_ROW * IMG_COLUNM
     )
     port map(
         i_clk => i_clk,
